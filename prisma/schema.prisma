@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Catalogo {
+  id                           Int           @id @default(autoincrement())
+  nombre                       String
+  descripcion                  String
+  estudiantesGenero            Estudiantes[] @relation(name: "catalogo_genero")
+  estudiantesTipoEstudiante    Estudiantes[] @relation(name: "catalogo_tipo_estudiante")
+  estudianteEtnia              Estudiantes[] @relation(name: "catalogo_etnia")
+  estudianteNivelInstruccion   Estudiantes[] @relation(name: "catalogo_nivel_instruccion")
+  estudianteSituacionEconomica Estudiantes[] @relation(name: "catalogo_situacion_economica")
+}
+
+model Estudiantes {
+  id                   Int      @id @default(autoincrement())
+  cedula               String
+  fechaNacimiento      DateTime
+  nombres              String
+  apellidos            String
+  email                String   @unique
+  discapacidad         Boolean  @default(false)
+  detallesDiscapacidad String?
+  direccion            String
+  numeroCelular        String
+  numeroConvencional   String
+  clave                String
+  rol                  Roles    @default(ESTUDIANTE)
+  genero               Catalogo @relation(fields: [generoId], references: [id], name: "catalogo_genero")
+  generoId             Int
+  tipoEstudiante       Catalogo @relation(fields: [tipoEstudianteId], references: [id], name: "catalogo_tipo_estudiante")
+  tipoEstudianteId     Int
+  etnia                Catalogo @relation(fields: [etniaId], references: [id], name: "catalogo_etnia")
+  etniaId              Int
+  nivelInstruccion     Catalogo @relation(fields: [nivelInstruccionId], references: [id], name: "catalogo_nivel_instruccion")
+  nivelInstruccionId   Int
+  situacionEconomica   Catalogo @relation(fields: [situacionEconomicaId], references: [id], name: "catalogo_situacion_economica")
+  situacionEconomicaId Int
+}
+
+model Matriculas {
+  id Int @id @default(autoincrement())
+}
+
+enum Roles {
+  ESTUDIANTE
+  ADMIN
+}
