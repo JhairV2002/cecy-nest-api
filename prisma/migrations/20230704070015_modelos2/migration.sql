@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Matriculas" ALTER COLUMN "nota1" DROP NOT NULL,
+ALTER COLUMN "nota2" DROP NOT NULL,
+ALTER COLUMN "promedio" DROP NOT NULL,
+ALTER COLUMN "porcentajeAsistencia" DROP NOT NULL;

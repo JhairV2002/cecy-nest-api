@@ -2,12 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-import { Estudiantes } from '@prisma/client';
-import { EstudiantesDTO } from './estudiantesDTO';
-
 @Injectable()
 export class EstudiantesService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   /**
    * findAllEstudiantes

@@ -13,7 +13,7 @@ datasource db {
 model Catalogo {
   id                              Int                     @id @default(autoincrement())
   nombre                          String
-  descripcion                     String
+  descripcion                     String                  @unique
   estudiantesGenero               Estudiantes[]           @relation(name: "catalogo_genero")
   estudiantesTipoEstudiante       Estudiantes[]           @relation(name: "catalogo_tipo_estudiante")
   estudianteEtnia                 Estudiantes[]           @relation(name: "catalogo_etnia")
@@ -26,63 +26,66 @@ model Catalogo {
 }
 
 model Estudiantes {
-  id                   Int      @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   cedula               String
   fechaNacimiento      DateTime
   nombres              String
   apellidos            String
-  email                String   @unique
-  discapacidad         Boolean  @default(false)
+  email                String       @unique
+  discapacidad         Boolean      @default(false)
   detallesDiscapacidad String?
   direccion            String
   numeroCelular        String
   numeroConvencional   String
   clave                String
-  rol                  Roles    @default(ESTUDIANTE)
-  genero               Catalogo @relation(fields: [generoId], references: [id], name: "catalogo_genero")
+  matriculas           Matriculas[]
+  rol                  Roles        @default(ESTUDIANTE)
+  genero               Catalogo     @relation(fields: [generoId], references: [id], name: "catalogo_genero")
   generoId             Int
-  tipoEstudiante       Catalogo @relation(fields: [tipoEstudianteId], references: [id], name: "catalogo_tipo_estudiante")
+  tipoEstudiante       Catalogo     @relation(fields: [tipoEstudianteId], references: [id], name: "catalogo_tipo_estudiante")
   tipoEstudianteId     Int
-  etnia                Catalogo @relation(fields: [etniaId], references: [id], name: "catalogo_etnia")
+  etnia                Catalogo     @relation(fields: [etniaId], references: [id], name: "catalogo_etnia")
   etniaId              Int
-  nivelInstruccion     Catalogo @relation(fields: [nivelInstruccionId], references: [id], name: "catalogo_nivel_instruccion")
+  nivelInstruccion     Catalogo     @relation(fields: [nivelInstruccionId], references: [id], name: "catalogo_nivel_instruccion")
   nivelInstruccionId   Int
-  situacionEconomica   Catalogo @relation(fields: [situacionEconomicaId], references: [id], name: "catalogo_situacion_economica")
+  situacionEconomica   Catalogo     @relation(fields: [situacionEconomicaId], references: [id], name: "catalogo_situacion_economica")
   situacionEconomicaId Int
 }
 
 model Matriculas {
   id                    Int                    @id @default(autoincrement())
   cursoId               Int
-  nota1                 Decimal
-  nota2                 Decimal
-  promedio              Decimal
-  porcentajeAsistencia  Decimal
+  nota1                 Decimal?
+  nota2                 Decimal?
+  promedio              Decimal?
+  porcentajeAsistencia  Decimal?
   estadoMatricula       Catalogo               @relation(fields: [estadoMatriculaId], references: [id], name: "catalogo_estado_matricula")
   estadoMatriculaId     Int
   estadoCurso           Catalogo               @relation(fields: [estadoCursoId], references: [id], name: "catalogo_estado_curso")
   estadoCursoId         Int
   formularioInscripcion FormularioInscripcion?
   observaciones         Observaciones[]
-  asistencias           Asistencia[]
+  detalleAsistencia     DetalleAsistencia[]
+  estudiante            Estudiantes            @relation(fields: [estudianteId], references: [id])
+  estudianteId          Int
 }
 
 model Observaciones {
-  id           Int        @id @default(autoincrement())
-  description  String
-  completado   Boolean
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  matricula    Matriculas @relation(fields: [matriculaId], references: [id])
-  matriculaId  Int
-  asistencia   Asistencia @relation(fields: [asistenciaId], references: [id])
-  asistenciaId Int
+  id           Int         @id @default(autoincrement())
+  descripcion  String
+  completado   Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  matricula    Matriculas? @relation(fields: [matriculaId], references: [id])
+  matriculaId  Int?
+  asistencia   Asistencia? @relation(fields: [asistenciaId], references: [id])
+  asistenciaId Int?
 }
 
 model FormularioInscripcion {
   id                  Int          @id @default(autoincrement())
   publicitado         Boolean
-  contactoInstitucion String
+  contactoInstitucion String?
   otrosCursos         String
   publicidad          Catalogo     @relation(fields: [publicidadId], references: [id], name: "catalogo_publicidad")
   publicidadId        Int
@@ -101,21 +104,23 @@ model Documentos {
 }
 
 model Asistencia {
-  id                   Int             @id @default(autoincrement())
+  id                   Int                 @id @default(autoincrement())
   periodo              String
-  cursoId              Int
+  cursoId              Int?
   evidenciaFotografica String
   duracionClase        String
   fecha                DateTime
   observaciones        Observaciones[]
-  matriculas           Matriculas      @relation(fields: [matriculaId], references: [id])
-  matriculaId          Int
+  detalleAsistencia    DetalleAsistencia[]
 }
 
 model DetalleAsistencia {
-  id                 Int      @id @default(autoincrement())
-  estadoAsistencia   Catalogo @relation(fields: [estadoAsistenciaId], references: [id], name: "catalogo_estado_detalle_asistencia")
+  id                 Int          @id @default(autoincrement())
+  estadoAsistencia   Catalogo     @relation(fields: [estadoAsistenciaId], references: [id], name: "catalogo_estado_detalle_asistencia")
   estadoAsistenciaId Int
+  asistencia         Asistencia   @relation(fields: [asistenciaId], references: [id])
+  asistenciaId       Int
+  matriculas         Matriculas[]
 }
 
 enum Roles {
